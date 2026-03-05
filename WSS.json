@@ -74,42 +74,6 @@
       "shape": "rounded"
     },
     {
-      "id": "n6",
-      "x": 660.9174424231036,
-      "y": 140.59848356658887,
-      "w": 0,
-      "h": 0,
-      "text": "New Node",
-      "ci": 0,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "shape": "rounded"
-    },
-    {
-      "id": "n8",
-      "x": 659.6324283930365,
-      "y": 350.05577046751995,
-      "w": 0,
-      "h": 0,
-      "text": "New Node",
-      "ci": 0,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "shape": "rounded"
-    },
-    {
       "id": "n11",
       "x": 97.83340176378977,
       "y": 462.99904476927134,
@@ -117,6 +81,24 @@
       "h": 0,
       "text": "New Node",
       "ci": 2,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "shape": "rounded"
+    },
+    {
+      "id": "n13",
+      "x": 559.4013340478057,
+      "y": 198.42411491960664,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
+      "ci": 7,
       "link": "",
       "collapsed": false,
       "isNote": false,
@@ -135,16 +117,6 @@
       "to": "n1"
     },
     {
-      "id": "e7",
-      "from": "n5",
-      "to": "n6"
-    },
-    {
-      "id": "e9",
-      "from": "n5",
-      "to": "n8"
-    },
-    {
       "id": "e10",
       "from": "n2",
       "to": "n5",
@@ -156,9 +128,14 @@
       "id": "e12",
       "from": "n2",
       "to": "n11"
+    },
+    {
+      "id": "e14",
+      "from": "n5",
+      "to": "n13"
     }
   ],
-  "nid": 13,
+  "nid": 15,
   "edgeThickness": 2,
   "edgeColor": "#b8956b"
 }
