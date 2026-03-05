@@ -72,24 +72,6 @@
       "bold": false,
       "italic": false,
       "shape": "rounded"
-    },
-    {
-      "id": "n22",
-      "x": 554.3495307960478,
-      "y": 222.10657165099178,
-      "w": 0,
-      "h": 0,
-      "text": "New Node",
-      "ci": 7,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "shape": "rounded"
     }
   ],
   "edges": [
@@ -102,11 +84,6 @@
       "id": "e19",
       "from": "n2",
       "to": "n18"
-    },
-    {
-      "id": "e23",
-      "from": "n18",
-      "to": "n22"
     }
   ],
   "nid": 24,
