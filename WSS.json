@@ -2,67 +2,13 @@
   "title": "My Mind Map",
   "nodes": [
     {
-      "id": "n1",
-      "x": -183.72962873069562,
-      "y": 223.40940955101496,
+      "id": "n24",
+      "x": 122.98798213658593,
+      "y": 225.4097083430424,
       "w": 0,
       "h": 0,
-      "text": "New Node",
-      "ci": 3,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "shape": "square"
-    },
-    {
-      "id": "n2",
-      "x": 93.83340176378977,
-      "y": 191.99904476927136,
-      "w": 119,
-      "h": 108,
-      "text": "New Node",
-      "ci": 3,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "shape": "circle"
-    },
-    {
-      "id": "n18",
-      "x": 329.39254154873595,
-      "y": 221.0313028337875,
-      "w": 0,
-      "h": 0,
-      "text": "New Node",
-      "ci": 7,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "shape": "rounded"
-    },
-    {
-      "id": "n22",
-      "x": 554.3495307960478,
-      "y": 222.10657165099178,
-      "w": 0,
-      "h": 0,
-      "text": "New Node",
-      "ci": 7,
+      "text": "WSS",
+      "ci": 2,
       "link": "",
       "collapsed": false,
       "isNote": false,
@@ -74,24 +20,8 @@
       "shape": "rounded"
     }
   ],
-  "edges": [
-    {
-      "id": "e3",
-      "from": "n2",
-      "to": "n1"
-    },
-    {
-      "id": "e19",
-      "from": "n2",
-      "to": "n18"
-    },
-    {
-      "id": "e23",
-      "from": "n18",
-      "to": "n22"
-    }
-  ],
-  "nid": 24,
+  "edges": [],
+  "nid": 25,
   "edgeThickness": 2,
   "edgeColor": "#b8956b"
 }
