@@ -114,25 +114,6 @@
       "italic": false,
       "textAlign": "left",
       "shape": "rounded"
-    },
-    {
-      "id": "n44",
-      "x": 903,
-      "y": 226.5,
-      "w": 0,
-      "h": 0,
-      "text": "New Node",
-      "ci": 5,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "textAlign": "left",
-      "shape": "rounded"
     }
   ],
   "edges": [
@@ -161,11 +142,6 @@
       "id": "e43",
       "from": "n40",
       "to": "n42"
-    },
-    {
-      "id": "e45",
-      "from": "n40",
-      "to": "n44"
     }
   ],
   "nid": 46,
