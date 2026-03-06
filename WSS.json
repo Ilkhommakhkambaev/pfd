@@ -17,11 +17,85 @@
       "textColor": "",
       "bold": false,
       "italic": false,
+      "shape": "rounded",
+      "textAlign": "center"
+    },
+    {
+      "id": "n26",
+      "x": 363,
+      "y": 230.5,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
+      "ci": 3,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "textAlign": "left",
+      "shape": "rounded"
+    },
+    {
+      "id": "n29",
+      "x": 550,
+      "y": 231.5,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
+      "ci": 5,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "textAlign": "left",
+      "shape": "rounded"
+    },
+    {
+      "id": "n31",
+      "x": 364,
+      "y": 341.5,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
+      "ci": 2,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "textAlign": "left",
       "shape": "rounded"
     }
   ],
-  "edges": [],
-  "nid": 25,
+  "edges": [
+    {
+      "id": "e27",
+      "from": "n24",
+      "to": "n26"
+    },
+    {
+      "id": "e30",
+      "from": "n26",
+      "to": "n29"
+    },
+    {
+      "id": "e32",
+      "from": "n26",
+      "to": "n31"
+    }
+  ],
+  "nid": 33,
   "edgeThickness": 2,
   "edgeColor": "#b8956b"
 }
