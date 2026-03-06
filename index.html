@@ -444,6 +444,7 @@ body {
   <div class="sep"></div>
   <button class="btn primary" onclick="addNode()">+ Add Node</button>
   <button class="btn orange" id="btn-conn" onclick="cxConnToggle()">&#8594; Connect</button>
+  <button class="btn" onclick="newMapStart()" title="Create a new map">&#43; New Map</button>
   <div class="sep"></div>
   <span style="font-size:11px;color:var(--muted);">Color:</span>
   <div class="color-strip" id="swatches"></div>
@@ -521,6 +522,38 @@ body {
   <button class="shape-btn node-only" id="shape-diamond" onclick="applyShape('diamond')" title="Diamond">
     <svg viewBox="0 0 18 18"><polygon points="9,1 17,9 9,17 1,9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
   </button>
+</div>
+
+<!-- ── NEW MAP MODAL ──────────────────────────────────────── -->
+<div id="newmap-modal-bg" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:6000; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:16px; padding:32px; width:420px; box-shadow:0 8px 40px rgba(0,0,0,0.18); font-family:'Nunito Sans',sans-serif;">
+
+    <!-- Step 1: Save confirmation -->
+    <div id="newmap-step-save">
+      <div style="font-size:17px; font-weight:800; margin-bottom:8px;">Save current map?</div>
+      <div style="font-size:13px; color:#888; margin-bottom:24px;">Do you want to save your current map to GitHub before starting a new one?</div>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn" onclick="newMapCancel()" style="color:#888;">Cancel</button>
+        <button class="btn" onclick="newMapSkipSave()" style="background:#f0ece6;">Don't Save</button>
+        <button class="btn primary" onclick="newMapSaveFirst()">Save to GitHub</button>
+      </div>
+      <div id="newmap-save-status" style="font-size:11px; color:#888; margin-top:10px; min-height:14px;"></div>
+    </div>
+
+    <!-- Step 2: Name the new map -->
+    <div id="newmap-step-name" style="display:none;">
+      <div style="font-size:17px; font-weight:800; margin-bottom:8px;">New Map Name</div>
+      <div style="font-size:13px; color:#888; margin-bottom:16px;">Give your new map a name. This will be the filename when you save it to GitHub.</div>
+      <input id="newmap-name-input" type="text" placeholder="e.g. FRLD_2026"
+        style="width:100%; box-sizing:border-box; padding:10px 14px; border:1.5px solid #ddd; border-radius:8px; font-size:14px; font-family:'Nunito Sans',sans-serif; outline:none; margin-bottom:6px;"/>
+      <div style="font-size:11px; color:#888; margin-bottom:20px;">Will be saved as <strong id="newmap-name-preview">FRLD_2026.json</strong></div>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn" onclick="newMapCancel()" style="color:#888;">Cancel</button>
+        <button class="btn primary" onclick="newMapCreate()">Create Map</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <!-- ── GITHUB SETTINGS MODAL ─────────────────────────────── -->
@@ -2139,6 +2172,106 @@ function ghCloseModal() {
 document.getElementById('gh-modal-bg').addEventListener('click', e => {
   if (e.target === document.getElementById('gh-modal-bg')) ghCloseModal();
 });
+
+// ────────────────────────────────────────────────────────
+//  NEW MAP FLOW
+//  Step 1 - if canvas has content, ask to save first
+//  Step 2 - ask for new map name
+//  Step 3 - clear canvas, set title, ready to work
+// ────────────────────────────────────────────────────────
+
+function newMapStart() {
+  const bg = document.getElementById('newmap-modal-bg');
+  // Reset to step 1
+  document.getElementById('newmap-step-save').style.display = '';
+  document.getElementById('newmap-step-name').style.display = 'none';
+  document.getElementById('newmap-save-status').textContent = '';
+
+  if (S.nodes.length === 0) {
+    // Canvas already empty - skip save step, go straight to naming
+    newMapShowNameStep();
+    return;
+  }
+  // Canvas has content - show save confirmation
+  bg.style.display = 'flex';
+}
+
+function newMapCancel() {
+  document.getElementById('newmap-modal-bg').style.display = 'none';
+}
+
+async function newMapSaveFirst() {
+  // Save current map to GitHub then proceed to name step
+  document.getElementById('newmap-save-status').textContent = 'Saving...';
+  if (!ghReady()) {
+    document.getElementById('newmap-save-status').textContent = 'GitHub not configured - use Don\'t Save or cancel and set up GitHub first.';
+    return;
+  }
+  try {
+    await ghSaveFileAndWait(S.currentFile || ((document.getElementById('map-title').value || 'map').replace(/[^a-zA-Z0-9_\-\s]/g,'').replace(/\s+/g,'_') + '.json'));
+    newMapShowNameStep();
+  } catch(e) {
+    document.getElementById('newmap-save-status').textContent = 'Save failed: ' + e.message;
+  }
+}
+
+function newMapSkipSave() {
+  // Proceed without saving
+  newMapShowNameStep();
+}
+
+function newMapShowNameStep() {
+  document.getElementById('newmap-step-save').style.display = 'none';
+  document.getElementById('newmap-step-name').style.display = '';
+  const input = document.getElementById('newmap-name-input');
+  input.value = '';
+  document.getElementById('newmap-name-preview').textContent = '.json';
+  input.focus();
+  input.oninput = function() {
+    const clean = this.value.replace(/[^a-zA-Z0-9_\-\s]/g,'').replace(/\s+/g,'_');
+    document.getElementById('newmap-name-preview').textContent = (clean || 'map') + '.json';
+  };
+}
+
+function newMapCreate() {
+  const raw   = document.getElementById('newmap-name-input').value.trim();
+  const clean = raw.replace(/[^a-zA-Z0-9_\-\s]/g,'').replace(/\s+/g,'_');
+  if (!clean) {
+    document.getElementById('newmap-name-input').style.borderColor = 'var(--red)';
+    return;
+  }
+  // Clear canvas and set new title + currentFile
+  clearSilent();
+  document.getElementById('map-title').value = clean;
+  S.currentFile = clean + '.json';
+  document.getElementById('newmap-modal-bg').style.display = 'none';
+  showToast('New map ready: ' + clean);
+}
+
+// Save to GitHub and return a promise - used by newMapSaveFirst
+async function ghSaveFileAndWait(filename) {
+  const c       = ghCreds();
+  const content = JSON.stringify(getMapData(), null, 2);
+  const b64     = btoa(unescape(encodeURIComponent(content)));
+
+  let sha = null;
+  const check = await fetch(`https://api.github.com/repos/${c.user}/${c.repo}/contents/${filename}`, {
+    headers: { Authorization: `token ${c.token}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (check.ok) { const ex = await check.json(); sha = ex.sha; }
+
+  const body = { message: `Update ${filename} via Mind Map Editor`, content: b64 };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(`https://api.github.com/repos/${c.user}/${c.repo}/contents/${filename}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${c.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Save failed'); }
+  S.currentFile = filename;
+  showToast('Saved: ' + filename);
+}
 
 // ── START ──
 init();
