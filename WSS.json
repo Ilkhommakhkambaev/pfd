@@ -59,44 +59,6 @@
       "shape": "rounded"
     },
     {
-      "id": "n31",
-      "x": 364,
-      "y": 341.5,
-      "w": 0,
-      "h": 0,
-      "text": "New Node",
-      "ci": 2,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "textAlign": "left",
-      "shape": "rounded"
-    },
-    {
-      "id": "n33",
-      "x": 723,
-      "y": 226.5,
-      "w": 0,
-      "h": 0,
-      "text": "New Node",
-      "ci": 5,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "textAlign": "left",
-      "shape": "rounded"
-    },
-    {
       "id": "n35",
       "x": 172.9879821365859,
       "y": 376.40970834304244,
@@ -126,16 +88,6 @@
       "id": "e30",
       "from": "n26",
       "to": "n29"
-    },
-    {
-      "id": "e32",
-      "from": "n26",
-      "to": "n31"
-    },
-    {
-      "id": "e34",
-      "from": "n29",
-      "to": "n33"
     },
     {
       "id": "e36",
