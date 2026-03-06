@@ -2063,19 +2063,29 @@ async function ghLoadFile(filename, sha) {
   ghSetStatus('Loading ' + filename + '...', 'muted');
 
   try {
+    // If a map is currently open and was previously saved - auto-save it first
+    if (S.currentFile && S.nodes.length > 0) {
+      ghSetStatus('Saving current map first...', 'muted');
+      try {
+        await ghSaveFileAndWait(S.currentFile);
+      } catch(e) {
+        // Save failed - warn but continue loading anyway
+        showToast('Warning: could not auto-save ' + S.currentFile);
+      }
+    }
+
     const res = await fetch(`https://api.github.com/repos/${c.user}/${c.repo}/contents/${filename}`, {
       headers: { Authorization: `token ${c.token}`, Accept: 'application/vnd.github.v3+json' }
     });
     if (!res.ok) throw new Error('Could not fetch file. Status: ' + res.status);
 
     const data = await res.json();
-    // GitHub returns file content as base64 encoded - decode it
     const json = JSON.parse(atob(data.content.replace(/\n/g, '')));
 
     ghCloseModal();
     clearSilent();
     restore(json);
-    S.currentFile = filename; // remember for auto-save
+    S.currentFile = filename;
     showToast('Loaded: ' + filename.replace('.json','') + ' from GitHub');
   } catch(err) {
     ghSetStatus('Error loading file: ' + err.message, 'red');
