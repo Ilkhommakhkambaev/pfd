@@ -22,13 +22,13 @@
     },
     {
       "id": "n26",
-      "x": 363,
-      "y": 230.5,
+      "x": 364,
+      "y": 229.5,
       "w": 0,
       "h": 0,
       "text": "New Node",
       "ci": 3,
-      "link": "",
+      "link": "https://drive.google.com/drive/folders/1r8q-MYKJIkzADgGrloJ73XRf_gvDRSWI?usp=drive_link",
       "collapsed": false,
       "isNote": false,
       "fontSize": 13,
@@ -41,8 +41,8 @@
     },
     {
       "id": "n29",
-      "x": 550,
-      "y": 231.5,
+      "x": 543,
+      "y": 226.5,
       "w": 0,
       "h": 0,
       "text": "New Node",
@@ -76,6 +76,44 @@
       "italic": false,
       "textAlign": "left",
       "shape": "rounded"
+    },
+    {
+      "id": "n33",
+      "x": 723,
+      "y": 226.5,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
+      "ci": 5,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "textAlign": "left",
+      "shape": "rounded"
+    },
+    {
+      "id": "n35",
+      "x": 172.9879821365859,
+      "y": 376.40970834304244,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
+      "ci": 2,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "textAlign": "left",
+      "shape": "rounded"
     }
   ],
   "edges": [
@@ -93,9 +131,20 @@
       "id": "e32",
       "from": "n26",
       "to": "n31"
+    },
+    {
+      "id": "e34",
+      "from": "n29",
+      "to": "n33"
+    },
+    {
+      "id": "e36",
+      "from": "n24",
+      "to": "n35",
+      "label": "Logic"
     }
   ],
-  "nid": 33,
+  "nid": 37,
   "edgeThickness": 2,
   "edgeColor": "#b8956b"
 }
