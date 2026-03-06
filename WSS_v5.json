@@ -133,10 +133,29 @@
       "italic": false,
       "textAlign": "left",
       "shape": "rounded"
+    },
+    {
+      "id": "n8",
+      "x": 483,
+      "y": 62.5,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
+      "ci": 1,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "textAlign": "left",
+      "shape": "rounded"
     }
   ],
   "edges": [],
-  "nid": 8,
+  "nid": 9,
   "edgeThickness": 2,
   "edgeColor": "#b8b0a6"
 }
