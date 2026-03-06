@@ -134,40 +134,24 @@ body {
 
 /* ── NODE SHAPES ─────────────────────── */
 .node.shape-square   { border-radius: 0 !important; }
+
 .node.shape-circle   {
   border-radius: 50% !important;
-  min-width: 90px; min-height: 90px;
+  /* Circle needs equal width/height - enforced via JS in applyShape */
   display: flex; align-items: center; justify-content: center;
   text-align: center;
-  padding: 10px 14px !important;
+  padding: 14px !important;
 }
+
 .node.shape-diamond  {
   transform: rotate(45deg);
-  min-width: 90px; min-height: 90px;
   border-radius: 6px !important;
-  padding: 10px !important;
+  padding: 12px !important;
   display: flex; align-items: center; justify-content: center;
 }
 .node.shape-diamond .node-label,
 .node.shape-diamond .node-ta  { transform: rotate(-45deg); text-align: center; }
-/* diamond selected ring needs to not be rotated */
 .node.shape-diamond.selected  { box-shadow: 0 0 0 3px rgba(59,110,165,0.22); }
-
-.node.shape-hexagon  {
-  clip-path: polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%);
-  border-radius: 0 !important;
-  padding: 12px 28px !important;
-  border: none !important;
-  text-align: center;
-}
-.node.shape-hexagon.selected { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: none; }
-
-.node.shape-parallelogram {
-  transform: skewX(-12deg);
-  border-radius: 4px !important;
-}
-.node.shape-parallelogram .node-label,
-.node.shape-parallelogram .node-ta { transform: skewX(12deg); }
 
 /* shape picker in format panel */
 .shape-btn {
@@ -460,14 +444,10 @@ body {
   <div class="sep"></div>
   <button class="btn primary" onclick="addNode()">+ Add Node</button>
   <button class="btn orange" id="btn-conn" onclick="cxConnToggle()">&#8594; Connect</button>
-  <button class="btn red" onclick="if(S.sel) deleteNode(S.sel)">&#10005; Delete</button>
   <div class="sep"></div>
   <span style="font-size:11px;color:var(--muted);">Color:</span>
   <div class="color-strip" id="swatches"></div>
   <div class="sep"></div>
-  <button class="btn" onclick="saveMap()">&#8595; Save</button>
-  <button class="btn" onclick="triggerLoad()">&#8593; Load</button>
-  <input type="file" id="file-in" accept=".json" style="display:none" onchange="loadMapFromFileInput(event)"/>
   <div class="sep"></div>
   <button class="btn" onclick="ghSave()" title="Save map to GitHub" style="gap:4px;">
     <!-- GitHub icon -->
@@ -508,6 +488,11 @@ body {
   <button class="fmt-btn node-only" id="fmt-bold"   onclick="toggleFmtBtn('fmt-bold')"   title="Bold"><b>B</b></button>
   <button class="fmt-btn node-only" id="fmt-italic" onclick="toggleFmtBtn('fmt-italic')" title="Italic"><i>I</i></button>
 
+  <div class="fmt-sep node-only"></div>
+  <button class="fmt-btn node-only" id="fmt-align-left"   onclick="applyAlign('left')"   title="Align left">&#8676;</button>
+  <button class="fmt-btn node-only" id="fmt-align-center" onclick="applyAlign('center')" title="Align center">&#8596;</button>
+  <button class="fmt-btn node-only" id="fmt-align-right"  onclick="applyAlign('right')"  title="Align right">&#8677;</button>
+
   <div class="fmt-sep"></div>
   <label>Line</label>
   <input id="fmt-thickness" type="range" min="1" max="8" step="0.5" value="2"
@@ -535,12 +520,6 @@ body {
   </button>
   <button class="shape-btn node-only" id="shape-diamond" onclick="applyShape('diamond')" title="Diamond">
     <svg viewBox="0 0 18 18"><polygon points="9,1 17,9 9,17 1,9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-  </button>
-  <button class="shape-btn node-only" id="shape-hexagon" onclick="applyShape('hexagon')" title="Hexagon">
-    <svg viewBox="0 0 18 18"><polygon points="4.5,1.5 13.5,1.5 18,9 13.5,16.5 4.5,16.5 0,9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-  </button>
-  <button class="shape-btn node-only" id="shape-parallelogram" onclick="applyShape('parallelogram')" title="Parallelogram">
-    <svg viewBox="0 0 18 18"><polygon points="4,3 17,3 14,15 1,15" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
   </button>
 </div>
 
@@ -731,7 +710,7 @@ function addNode(x, y, text, ci, link, isNote) {
     ci: ci || 0, link: link || '', collapsed: false, isNote: !!isNote,
     // Text formatting
     fontSize: 13, fontFamily: 'Nunito', textColor: '',
-    bold: false, italic: false,
+    bold: false, italic: false, textAlign: 'left',
     // Shape
     shape: 'rounded', // rounded | square | circle | diamond | hexagon | parallelogram
   });
@@ -771,7 +750,8 @@ function buildNode(id) {
     (n.shape && n.shape !== 'rounded' ? ` shape-${n.shape}` : '');
 
   // Apply explicit size if user has resized this node
-  const wStyle = n.w ? `width:${n.w}px; max-width:${n.w}px;` : '';
+  // When user has manually resized, fix width and drop max-width so text wraps freely
+  const wStyle = n.w ? `width:${n.w}px; max-width:${n.w}px; white-space:normal;` : '';
   const hStyle = n.h ? `min-height:${n.h}px;` : '';
   el.style.cssText = `left:${n.x}px; top:${n.y}px; background:${c.bg}; border-color:${c.bd}; color:${isDark ? '#fff' : 'var(--text)'}; ${wStyle}${hStyle}`;
 
@@ -786,6 +766,7 @@ function buildNode(id) {
   lbl.style.cssText = `
     font-size:${fs}px;
     font-family:${ff};
+    text-align:${n.textAlign || 'left'};
     ${tc ? `color:${tc};` : ''}
     ${n.bold   ? 'font-weight:800;' : ''}
     ${n.italic ? 'font-style:italic;' : ''}
@@ -1006,6 +987,10 @@ function populateFmtPanel(id) {
   document.getElementById('fmt-color').value     = n.textColor  || '#2a2520';
   document.getElementById('fmt-bold').classList.toggle('on',   !!n.bold);
   document.getElementById('fmt-italic').classList.toggle('on', !!n.italic);
+  // Sync alignment buttons
+  ['left','center','right'].forEach(a => {
+    document.getElementById('fmt-align-' + a).classList.toggle('on', (n.textAlign || 'left') === a);
+  });
   // Sync thickness + color sliders to current global values
   document.getElementById('fmt-thickness').value   = S.edgeThickness || 2;
   document.getElementById('fmt-thick-val').textContent = (S.edgeThickness || 2) + 'px';
@@ -1054,6 +1039,22 @@ function applyFmt() {
 function toggleFmtBtn(btnId) {
   document.getElementById(btnId).classList.toggle('on');
   applyFmt();
+}
+
+function applyAlign(align) {
+  const id = S.sel;
+  if (!id) return;
+  const n = S.nodes.find(n => n.id === id);
+  if (!n) return;
+  n.textAlign = align;
+  // Update button states
+  ['left','center','right'].forEach(a => {
+    document.getElementById('fmt-align-' + a).classList.toggle('on', a === align);
+  });
+  // Apply live to label without full rebuild
+  const lbl = document.querySelector(`#${id} .node-label`);
+  if (lbl) lbl.style.textAlign = align;
+  autoSave();
 }
 
 // ────────────────────────────────────────────────────────
@@ -1141,6 +1142,20 @@ function applyShape(shape) {
   const n = S.nodes.find(n => n.id === id);
   if (!n) return;
   n.shape = shape;
+
+  // Circle needs equal width and height to look round.
+  // Measure the current node size and set w = h = max(w,h)
+  if (shape === 'circle') {
+    const el = document.getElementById(id);
+    if (el) {
+      const size = Math.max(el.offsetWidth, el.offsetHeight, 80);
+      n.w = size; n.h = size;
+    }
+  } else if (shape === 'rounded' || shape === 'square' || shape === 'parallelogram') {
+    // Reset manual size so node shrinks back to content
+    n.w = 0; n.h = 0;
+  }
+
   buildNode(id);
   select(id);
   drawEdges();
@@ -1772,6 +1787,7 @@ function restore(data) {
     w: n.w || 0, h: n.h || 0, isNote: n.isNote || false,
     fontSize: n.fontSize || 13, fontFamily: n.fontFamily || 'Nunito',
     textColor: n.textColor || '', bold: n.bold || false, italic: n.italic || false,
+    textAlign: n.textAlign || 'left',
     shape: n.shape || 'rounded',
   }));
   S.edges = data.edges || [];
