@@ -305,7 +305,23 @@ body {
 }
 .node.selected .resize-handle { display: block; }
 
-.btn.orange { color: #e07b3a; border-color: #e07b3a; }
+/* drag-to-connect handle - small circle on right edge, appears on hover */
+.conn-handle {
+  position: absolute; right: -11px; top: 50%; transform: translateY(-50%);
+  width: 14px; height: 14px;
+  background: #e07b3a; border: 2px solid #fff;
+  border-radius: 50%; cursor: crosshair;
+  z-index: 60; display: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.node:hover .conn-handle,
+.node.selected .conn-handle { display: block; }
+
+/* highlight when a drag-to-connect line is hovering over a target node */
+.node.conn-target {
+  outline: 2px dashed #e07b3a;
+  outline-offset: 3px;
+}
 .btn.orange:hover, .btn.orange.active { background: #e07b3a; color: #fff; }
 
 /* floating X delete on selected node */
@@ -469,9 +485,7 @@ body {
     Load from GitHub
   </button>
   <button class="btn" onclick="ghSettings()" title="GitHub settings" style="padding:6px 8px;">⚙</button>
-  <div id="toolbar-credit">
-    Developed and designed by: <a href="https://ilkhom-makhkambaev.mystrikingly.com/" target="_blank" rel="noopener" style="color:var(--accent); font-weight:700; text-decoration:none;">Ilkhom Makhkambaev</a>
-  </div>
+</div>
 </div>
 
 <!-- ── FORMAT PANEL (appears when a node is selected) ───────── -->
@@ -534,6 +548,11 @@ body {
   <button class="shape-btn node-only" id="shape-diamond" onclick="applyShape('diamond')" title="Diamond">
     <svg viewBox="0 0 18 18"><polygon points="9,1 17,9 9,17 1,9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
   </button>
+</div>
+
+<!-- ── CREDIT ──────────────────────────────────────────────── -->
+<div style="position:fixed; bottom:14px; right:16px; font-size:11px; color:#aaa; font-family:'Nunito Sans',sans-serif; z-index:999; pointer-events:auto;">
+  Developed and designed by: <a href="https://ilkhom-makhkambaev.mystrikingly.com/" target="_blank" rel="noopener" style="color:#aaa; font-weight:700; text-decoration:none;">Ilkhom Makhkambaev</a>
 </div>
 
 <!-- ── NEW MAP MODAL ──────────────────────────────────────── -->
@@ -843,7 +862,13 @@ function buildNode(id) {
   rsz.addEventListener('mousedown', e => { e.stopPropagation(); beginResize(e, id); });
   el.appendChild(rsz);
 
-  // ── Drive icon (right side, always visible when link exists) ──
+  // ── Drag-to-connect handle (right edge, appears on hover) ──
+  // Grab this dot and drag to any other node to create a connection instantly.
+  const connHandle = document.createElement('div');
+  connHandle.className = 'conn-handle';
+  connHandle.title = 'Drag to connect to another node';
+  connHandle.addEventListener('mousedown', e => { e.stopPropagation(); beginDragConnect(e, id); });
+  el.appendChild(connHandle);
   if (n.link) {
     const a = document.createElement('a');
     a.className = 'drive-icon';
@@ -1392,6 +1417,14 @@ window.addEventListener('keydown', e => {
     spaceHeld = true;
     document.getElementById('wrap').style.cursor = 'grab';
   }
+
+  // Ctrl+Z = undo
+  if (e.key === 'z' && (e.ctrlKey || e.metaKey) && !e.target.matches('input, textarea')) {
+    e.preventDefault();
+    undoLast();
+    return;
+  }
+
   // Ctrl+A = select all nodes
   if (e.key === 'a' && (e.ctrlKey || e.metaKey) && !e.target.matches('input, textarea')) {
     e.preventDefault();
@@ -1408,10 +1441,23 @@ window.addEventListener('keydown', e => {
     showToast(`${S.selSet.size} nodes selected`);
     return;
   }
-  // Delete key removes selected node(s)
+
+  // Delete / Backspace = remove selected node(s) OR selected edge
   if ((e.key === 'Delete' || e.key === 'Backspace') && !e.target.matches('input, textarea')) {
+    // Delete selected edge if one is selected
+    if (S.selEdge) {
+      pushUndo();
+      const edge = S.edges.find(ed => ed.id === S.selEdge);
+      S.edges = S.edges.filter(ed => ed.id !== S.selEdge);
+      S.selEdge = null;
+      document.getElementById('fmt-panel').classList.remove('edge-mode', 'visible');
+      if (edge) buildNode(edge.from);
+      drawEdges();
+      autoSave();
+      return;
+    }
+    // Delete selected node(s)
     if (S.selSet.size > 1) {
-      // Delete all multi-selected nodes
       const ids = [...S.selSet];
       clearMultiSel();
       ids.forEach(id => deleteNode(id));
@@ -1555,6 +1601,7 @@ function drawEdges() {
           document.getElementById('edge-label-lbl').style.display = 'none';
           document.getElementById('fmt-edge-text').style.display  = 'none';
         }
+        pushUndo(); // save state before edge deletion
         S.edges = S.edges.filter(ed => ed.id !== edge.id);
         buildNode(edge.from);
         drawEdges();
@@ -1638,6 +1685,101 @@ function handleConnClick(id) {
   cancelConn();
 }
 
+// ────────────────────────────────────────────────────────
+//  DRAG-TO-CONNECT
+//  Grab the orange dot on the right edge of any node,
+//  drag to another node, release to create a connection.
+//  A live SVG line follows the mouse while dragging.
+// ────────────────────────────────────────────────────────
+
+function beginDragConnect(e, fromId) {
+  e.preventDefault();
+
+  // Create a temporary SVG line that follows the mouse
+  const rubber = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  rubber.setAttribute('stroke', '#e07b3a');
+  rubber.setAttribute('stroke-width', '2');
+  rubber.setAttribute('stroke-dasharray', '6,4');
+  rubber.setAttribute('pointer-events', 'none');
+  svgEl.appendChild(rubber);
+
+  // Starting point - center of the source node
+  const fromEl = document.getElementById(fromId);
+
+  function getNodeCenter(el) {
+    const wrapRect = document.getElementById('wrap').getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    return {
+      x: (r.left + r.width / 2  - wrapRect.left - S.tx) / S.zoom,
+      y: (r.top  + r.height / 2 - wrapRect.top  - S.ty) / S.zoom
+    };
+  }
+
+  const src = getNodeCenter(fromEl);
+  rubber.setAttribute('x1', src.x);
+  rubber.setAttribute('y1', src.y);
+  rubber.setAttribute('x2', src.x);
+  rubber.setAttribute('y2', src.y);
+
+  // Track which node the mouse is hovering over as a target
+  let hoveredTarget = null;
+
+  function onMove(ev) {
+    const wrapRect = document.getElementById('wrap').getBoundingClientRect();
+    const mx = (ev.clientX - wrapRect.left - S.tx) / S.zoom;
+    const my = (ev.clientY - wrapRect.top  - S.ty) / S.zoom;
+    rubber.setAttribute('x2', mx);
+    rubber.setAttribute('y2', my);
+
+    // Highlight whichever node the cursor is over (excluding source)
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    const nodeEl = el?.closest('.node');
+    if (nodeEl && nodeEl.id !== fromId) {
+      if (hoveredTarget !== nodeEl.id) {
+        // Remove highlight from previous target
+        if (hoveredTarget) document.getElementById(hoveredTarget)?.classList.remove('conn-target');
+        hoveredTarget = nodeEl.id;
+        nodeEl.classList.add('conn-target');
+      }
+    } else {
+      if (hoveredTarget) document.getElementById(hoveredTarget)?.classList.remove('conn-target');
+      hoveredTarget = null;
+    }
+  }
+
+  function onUp(ev) {
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup',   onUp);
+    rubber.remove();
+
+    // Clear any hover highlight
+    if (hoveredTarget) document.getElementById(hoveredTarget)?.classList.remove('conn-target');
+
+    // Find what node was released on
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    const nodeEl = el?.closest('.node');
+    if (nodeEl && nodeEl.id !== fromId) {
+      const toId = nodeEl.id;
+      const already = S.edges.some(ed =>
+        (ed.from === fromId && ed.to === toId) ||
+        (ed.from === toId   && ed.to === fromId));
+      if (!already) {
+        pushUndo();
+        S.edges.push({ id: 'e' + (S.nid++), from: fromId, to: toId });
+        buildNode(fromId);
+        drawEdges();
+        autoSave();
+        showToast('Connected!');
+      } else {
+        showToast('Already connected');
+      }
+    }
+  }
+
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup',   onUp);
+}
+
 function cancelConn() {
   if (S.conn.src) document.getElementById(S.conn.src)?.classList.remove('conn-src');
   S.conn = { on: false, src: null };
@@ -1689,7 +1831,31 @@ function addNoteNode(parentId) {
 //  DELETE NODE (and all its edges)
 // ────────────────────────────────────────────────────────
 
+// ────────────────────────────────────────────────────────
+//  UNDO SYSTEM (Ctrl+Z)
+//  Stores snapshots of full map state before destructive actions.
+//  Max 30 snapshots to keep memory reasonable.
+// ────────────────────────────────────────────────────────
+
+const undoStack = [];
+const UNDO_MAX  = 30;
+
+function pushUndo() {
+  // Deep-clone current state before any destructive action
+  undoStack.push(JSON.stringify(getMapData()));
+  if (undoStack.length > UNDO_MAX) undoStack.shift(); // drop oldest
+}
+
+function undoLast() {
+  if (undoStack.length === 0) { showToast('Nothing to undo'); return; }
+  const snapshot = JSON.parse(undoStack.pop());
+  clearSilent();
+  restore(snapshot);
+  showToast('Undo');
+}
+
 function deleteNode(id) {
+  pushUndo(); // save state before deletion
   const parentIds = S.edges.filter(e => e.to === id).map(e => e.from);
 
   S.nodes = S.nodes.filter(n => n.id !== id);
@@ -1884,11 +2050,49 @@ function loadMapFromFileInput(ev) {
 }
 
 // ── Drag-and-drop .json file onto the canvas to load it ──
-document.getElementById('wrap').addEventListener('dragover', e => e.preventDefault());
+document.getElementById('wrap').addEventListener('dragover', e => {
+  e.preventDefault();
+  // Show visual feedback when dragging files/folders over canvas
+  e.dataTransfer.dropEffect = 'copy';
+});
+
 document.getElementById('wrap').addEventListener('drop', e => {
   e.preventDefault();
-  const file = e.dataTransfer.files[0];
-  if (file && file.name.endsWith('.json')) loadMapFromFile(file);
+
+  const items = e.dataTransfer.items;
+  const files = e.dataTransfer.files;
+
+  // Calculate drop position on canvas accounting for pan and zoom
+  const wrap = document.getElementById('wrap');
+  const rect = wrap.getBoundingClientRect();
+  const dropX = (e.clientX - rect.left - S.tx) / S.zoom;
+  const dropY = (e.clientY - rect.top  - S.ty) / S.zoom;
+
+  // Case 1: dropped a .json map file - load it
+  if (files.length === 1 && files[0].name.endsWith('.json')) {
+    loadMapFromFile(files[0]);
+    return;
+  }
+
+  // Case 2: dropped files or folders from Windows Explorer
+  // Create one node per item, spread them out slightly so they don't stack
+  if (files.length > 0) {
+    let offset = 0;
+    Array.from(files).forEach(file => {
+      // Strip file extension for cleaner node text
+      // e.g. "072_Community_Resilience" stays as is, "report.docx" becomes "report"
+      const name = file.name.replace(/\.[^/.]+$/, '') || file.name;
+      const x = dropX + offset;
+      const y = dropY + offset;
+      addNode(x, y, name, 0, '', false);
+      offset += 30; // slight offset so multiple nodes don't perfectly overlap
+    });
+    if (files.length === 1) {
+      showToast('Node created: ' + files[0].name.replace(/\.[^/.]+$/, ''));
+    } else {
+      showToast(files.length + ' nodes created from dropped items');
+    }
+  }
 });
 
 // ── Right-click on empty canvas = option to load file ──
@@ -2294,6 +2498,29 @@ async function ghSaveFileAndWait(filename) {
   S.currentFile = filename;
   showToast('Saved: ' + filename);
 }
+
+// ── Ctrl+V paste URL directly into selected node (no permission popup) ──
+// The 'paste' event fires natively on Ctrl+V and gives clipboard text
+// without requiring browser clipboard permission API.
+window.addEventListener('paste', e => {
+  // Only intercept if user is not typing inside an input/textarea
+  if (e.target.matches('input, textarea')) return;
+  // Only act if a node is selected
+  if (!S.sel) return;
+
+  const text = (e.clipboardData || window.clipboardData).getData('text').trim();
+  if (!text.startsWith('http')) return; // not a URL - ignore, let default paste happen
+
+  e.preventDefault(); // block default paste behavior
+  const n = S.nodes.find(n => n.id === S.sel);
+  if (!n) return;
+  pushUndo();
+  n.link = text;
+  buildNode(n.id);
+  select(n.id);
+  autoSave();
+  showToast('Link added to node');
+});
 
 // ── START ──
 init();
