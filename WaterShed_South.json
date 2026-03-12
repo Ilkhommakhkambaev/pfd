@@ -26,9 +26,30 @@
       "id": "n2",
       "x": 277.89748218619735,
       "y": 310.11348370325123,
-      "w": 180.29557339019345,
-      "h": 36,
+      "w": 90,
+      "h": 38.60311721223303,
       "text": "WSS",
+      "ci": 0,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "textAlign": "left",
+      "shape": "rounded",
+      "borderColor": "",
+      "borderWidth": 0
+    },
+    {
+      "id": "n3",
+      "x": 457.89748218619735,
+      "y": 310.11348370325123,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
       "ci": 0,
       "link": "",
       "collapsed": false,
@@ -44,8 +65,14 @@
       "borderWidth": 0
     }
   ],
-  "edges": [],
-  "nid": 3,
+  "edges": [
+    {
+      "id": "e4",
+      "from": "n2",
+      "to": "n3"
+    }
+  ],
+  "nid": 5,
   "edgeThickness": 2,
   "edgeColor": "#b8956b"
 }
