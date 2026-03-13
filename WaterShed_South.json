@@ -217,7 +217,28 @@
       "y": 305.92673185524154,
       "w": 90,
       "h": 36,
-      "text": "D2",
+      "text": "D6",
+      "ci": 0,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "textAlign": "left",
+      "shape": "rounded",
+      "borderColor": "",
+      "borderWidth": 0
+    },
+    {
+      "id": "n25",
+      "x": 1702.9490141088922,
+      "y": 305.92673185524154,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
       "ci": 0,
       "link": "",
       "collapsed": false,
@@ -278,9 +299,14 @@
       "id": "e24",
       "from": "n21",
       "to": "n23"
+    },
+    {
+      "id": "e26",
+      "from": "n23",
+      "to": "n25"
     }
   ],
-  "nid": 25,
+  "nid": 27,
   "edgeThickness": 2,
   "edgeColor": "#b8956b"
 }
