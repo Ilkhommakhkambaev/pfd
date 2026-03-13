@@ -189,6 +189,27 @@
       "shape": "rounded",
       "borderColor": "",
       "borderWidth": 0
+    },
+    {
+      "id": "n21",
+      "x": 1454.7769710981397,
+      "y": 305.9267318552416,
+      "w": 0,
+      "h": 0,
+      "text": "New Node",
+      "ci": 0,
+      "link": "",
+      "collapsed": false,
+      "isNote": false,
+      "fontSize": 13,
+      "fontFamily": "Nunito",
+      "textColor": "",
+      "bold": false,
+      "italic": false,
+      "textAlign": "left",
+      "shape": "rounded",
+      "borderColor": "",
+      "borderWidth": 0
     }
   ],
   "edges": [
@@ -226,9 +247,14 @@
       "id": "e20",
       "from": "n17",
       "to": "n19"
+    },
+    {
+      "id": "e22",
+      "from": "n19",
+      "to": "n21"
     }
   ],
-  "nid": 21,
+  "nid": 23,
   "edgeThickness": 2,
   "edgeColor": "#b8956b"
 }
