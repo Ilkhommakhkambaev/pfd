@@ -2,27 +2,6 @@
   "title": "WaterShed South",
   "nodes": [
     {
-      "id": "n1",
-      "x": 100,
-      "y": 293,
-      "w": 0,
-      "h": 0,
-      "text": "New Node",
-      "ci": 0,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "textAlign": "left",
-      "shape": "rounded",
-      "borderColor": "",
-      "borderWidth": 0
-    },
-    {
       "id": "n2",
       "x": 103.453414065866,
       "y": 109.91927340720602,
