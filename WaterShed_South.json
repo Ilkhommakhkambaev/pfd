@@ -149,27 +149,6 @@
       "borderWidth": 0
     },
     {
-      "id": "n21",
-      "x": 2014.80911513146,
-      "y": 84.12725657902669,
-      "w": 135.71367269718993,
-      "h": 59,
-      "text": "D6",
-      "ci": 0,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "textAlign": "left",
-      "shape": "rounded",
-      "borderColor": "",
-      "borderWidth": 0
-    },
-    {
       "id": "n25",
       "x": 2431,
       "y": 100,
