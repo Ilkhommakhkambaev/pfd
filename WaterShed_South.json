@@ -149,27 +149,6 @@
       "borderWidth": 0
     },
     {
-      "id": "n19",
-      "x": 1771,
-      "y": 100,
-      "w": 90,
-      "h": 36,
-      "text": "D4",
-      "ci": 0,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "textAlign": "left",
-      "shape": "rounded",
-      "borderColor": "",
-      "borderWidth": 0
-    },
-    {
       "id": "n21",
       "x": 1991,
       "y": 100,
@@ -977,16 +956,6 @@
       "id": "e18",
       "from": "n15",
       "to": "n17"
-    },
-    {
-      "id": "e20",
-      "from": "n17",
-      "to": "n19"
-    },
-    {
-      "id": "e22",
-      "from": "n19",
-      "to": "n21"
     },
     {
       "id": "e24",
