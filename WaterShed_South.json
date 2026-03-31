@@ -674,27 +674,6 @@
       "borderWidth": 0
     },
     {
-      "id": "n75",
-      "x": 2027.8533470122793,
-      "y": 100,
-      "w": 90,
-      "h": 36,
-      "text": "D6",
-      "ci": 0,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "textAlign": "left",
-      "shape": "rounded",
-      "borderColor": "",
-      "borderWidth": 0
-    },
-    {
       "id": "n77",
       "x": 2180.790495731828,
       "y": 101.0023278252019,
@@ -1076,16 +1055,6 @@
       "id": "e74",
       "from": "n69",
       "to": "n73"
-    },
-    {
-      "id": "e76",
-      "from": "n73",
-      "to": "n75"
-    },
-    {
-      "id": "e78",
-      "from": "n75",
-      "to": "n77"
     },
     {
       "id": "e80",
