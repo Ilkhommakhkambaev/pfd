@@ -1029,27 +1029,6 @@
       "shape": "rounded",
       "borderColor": "",
       "borderWidth": 0
-    },
-    {
-      "id": "n131",
-      "x": 567.5496248244517,
-      "y": -30.21323220475893,
-      "w": 0,
-      "h": 0,
-      "text": "00_WORKPLAN",
-      "ci": 0,
-      "link": "",
-      "collapsed": false,
-      "isNote": false,
-      "fontSize": 13,
-      "fontFamily": "Nunito",
-      "textColor": "",
-      "bold": false,
-      "italic": false,
-      "textAlign": "left",
-      "shape": "rounded",
-      "borderColor": "",
-      "borderWidth": 0
     }
   ],
   "edges": [
@@ -1292,11 +1271,6 @@
       "id": "e130",
       "from": "n127",
       "to": "n129"
-    },
-    {
-      "id": "e132",
-      "from": "n37",
-      "to": "n131"
     }
   ],
   "nid": 133,
